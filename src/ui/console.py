@@ -112,22 +112,34 @@ class Console:
                         elif li_words[2] == "description":
                             description = input("Please type the description that you want to search by: ")
                             self.print_by_description(description)
-                elif li_words[0] == "filter" and li_words[1] == "activities":
+                elif li_words[0] == "display" and li_words[1] == "activities":
                     if li_words[2] == "date":
-                        date = input("Please type the date that you want to filter by: ")
+                        date = input("Please type the date that you want to display by: ")
                         self.print_by_date(date)
                     if li_words[2] == "person":
-                        person_id = input("Please type the id of the person that you want to filter by: ")
+                        person_id = input("Please type the id of the person that you want to display by: ")
                         self.print_by_person(person_id)
                 elif li_words[0] == "undo":
                     self.__command_manager.undo()
                 elif li_words[0] == "redo":
                     self.__command_manager.redo()
+                elif li_words[0] == "sort":
+                    if li_words[1] == "persons" and li_words[3] == "id":
+                        self.__person_service.sort_ascending_by_id()
+                    elif li_words[1] == "activities" and li_words[3] == "id":
+                        self.__activity_service.sort_ascending_by_id()
+                elif li_words[0] == "filter":
+                    if li_words[1] == "persons" and li_words[3] == "id":
+                        reference_id = input("Please specify the id that you want to filter by: ")
+                        self.__person_service.filter_greater_id(reference_id)
+                    elif li_words[1] == "activities" and li_words[3] == "id":
+                        reference_id = input("Please specify the id that you want to filter by: ")
+                        self.__activity_service.filter_greater_id(reference_id)
                 else:
                     print("The command you have typed is of incorrect form.")
             except Exception as ex:
                 print("Error, " + str(ex))
-                # traceback.print_exc()
+                traceback.print_exc()
 
     def print_all_persons(self):
         print(green + "The list of persons is:\nFormat: *id*.) *name*; *phone number*" + default)
@@ -168,13 +180,21 @@ class Console:
               "12.) " + blue + "list activities" + default + " - Displays all activities\n"
               "13.) " + blue + "list busiest days" + default + " - Displays all the days that contain at least one"
                                                                "activity, in ascending order of their busy time.\n"
-              "14.) " + blue + "filter activities date" + default + " - Displays all activities happening at a certain"
+              "14.) " + blue + "display activities date" + default + " - Displays all activities happening at a certain"
                                                                " date, in order of their start time\n"
-              "15.) " + blue + "filter activities person" + default + " - Displays all activities that the person"
+              "15.) " + blue + "display activities person" + default + " - Displays all activities that the person"
                                                                       " with the specified id performs.\n"
-              "16.) " + blue + "undo" + default + " - Undo the previous operation.\n"
-              "17.) " + blue + "redo" + default + " - Redo the previously undone operation.\n"
-              "18.) " + red + "exit" + default)
+              "16.) " + blue + "sort persons by id" + default + " - Sorts all persons in ascending order based"
+                                                               " on their ids.\n"
+              "17.) " + blue + "sort activities by id" + default + " - Sorts all activities in ascending order based"
+                                                               " on their ids.\n" 
+              "18.) " + blue + "filter persons by id" + default + " - Updates the list of persons so that all persons"
+                                                                  " with id less than the one specified are removed.\n"                                
+              "19.) " + blue + "filter activities by id" + default + " - Updates the list of activites so that all activities"
+                                                                  " with id less than the one specified are removed.\n"
+              "20.) " + blue + "undo" + default + " - Undo the previous operation.\n"
+              "21.) " + blue + "redo" + default + " - Redo the previously undone operation.\n"
+              "22.) " + red + "exit" + default)
 
     @staticmethod
     def format_id_list(string):
@@ -229,32 +249,32 @@ class Console:
         return [name, phone_number]
 
     def print_by_name(self, name):
-        for person in self.__person_service.filter_by_name(name):
+        for person in self.__person_service.search_by_name(name):
             print(str(person))
         print()
 
     def print_by_phone_number(self, phone_number):
-        for person in self.__person_service.filter_by_phone_number(phone_number):
+        for person in self.__person_service.search_by_phone_number(phone_number):
             print(str(person))
         print()
 
     def print_by_date_time(self, date, time):
-        for activity in self.__activity_service.filter_by_date_time(date, time):
+        for activity in self.__activity_service.search_by_date_time(date, time):
             print(str(activity))
         print()
 
     def print_by_description(self, description):
-        for activity in self.__activity_service.filter_by_description(description):
+        for activity in self.__activity_service.search_by_description(description):
             print(str(activity))
         print()
 
     def print_by_date(self, date):
-        for activity in self.__activity_service.filter_by_date(date):
+        for activity in self.__activity_service.search_by_date(date):
             print(str(activity))
         print()
 
     def print_by_person(self, person_id):
-        for activity in self.__activity_service.filter_by_person(person_id):
+        for activity in self.__activity_service.search_by_person(person_id):
             print(str(activity))
         print()
 

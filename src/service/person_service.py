@@ -52,7 +52,7 @@ class PersonService:
         """
         if not self.person_exists(int(person_id)):
             raise PersonServiceException("The person that you are trying to remove does not exist.")
-        person = self.__person_repository.find_by_id(person_id)
+        person = self.__person_repository.find_by_id(int(person_id))
         self.__person_repository.delete_by_id(person_id)
 
         li_activities_to_be_removed = []
@@ -119,10 +119,10 @@ class PersonService:
             minus = minus + 1
             times = times - 1
 
-    def filter_by_name(self, name):
+    def search_by_name(self, name):
         return [person for person in self.get_all_persons() if name.lower() in person.name.lower()]
 
-    def filter_by_phone_number(self, phone_number):
+    def search_by_phone_number(self, phone_number):
         return [person for person in self.get_all_persons() if phone_number in person.phone_number]
 
     def person_exists(self, person_id):
@@ -135,5 +135,11 @@ class PersonService:
         # print(person_from_list for person_from_list in li_persons)
         return any(person_id == person_from_list.id for person_from_list in li_persons)
 
-    def filter_by_id(self, person_id):
+    def display_by_id(self, person_id):
         return self.__person_repository.find_by_id(person_id)
+
+    def sort_ascending_by_id(self):
+        self.__person_repository.sort()
+
+    def filter_greater_id(self, args):
+        self.__person_repository.filter_greater_id(args)

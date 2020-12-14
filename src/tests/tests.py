@@ -5,6 +5,7 @@
 # Imports
 from random import randint
 
+from domain.data_structure import MyDataStructure, DataStructureService
 from domain.entity import Activity, Person
 from domain.validators import PersonValidator, ActivityValidator, ActivityValidatorException, PersonValidatorException
 from repository.inmemoryrepo import Repository
@@ -84,13 +85,13 @@ class Test(unittest.TestCase):
 
     # Filter by name
     def test_filter_by_name(self):
-        li_persons = self.person_service.filter_by_name("Zaris")
+        li_persons = self.person_service.search_by_name("Zaris")
         for person in li_persons:
             self.assertIn("Zaris", person.name)
 
     # Filter by phone number
     def test_filter_by_phone_number(self):
-        li_persons = self.person_service.filter_by_phone_number("unknown")
+        li_persons = self.person_service.search_by_phone_number("unknown")
         for person in li_persons:
             self.assertEqual(person.phone_number, "unknown")
 
@@ -143,7 +144,7 @@ class Test(unittest.TestCase):
         else:
             random_activity = self.li_activities[0]
 
-        li_filtered = self.activity_service.filter_by_date_time(random_activity.date, "15:00")
+        li_filtered = self.activity_service.search_by_date_time(random_activity.date, "15:00")
 
         for activity in li_filtered:
             self.assertEqual(activity.date, random_activity.date)
@@ -151,7 +152,7 @@ class Test(unittest.TestCase):
 
     def test_filter_by_description(self):
         description = "Reading"
-        li_filtered = self.activity_service.filter_by_description(description)
+        li_filtered = self.activity_service.search_by_description(description)
 
         for activity in li_filtered:
             self.assertEqual(activity.description, description)
@@ -161,13 +162,13 @@ class Test(unittest.TestCase):
 
         date = self.li_activities[random_index].date
 
-        li_filtered = self.activity_service.filter_by_date(date)
+        li_filtered = self.activity_service.search_by_date(date)
 
         for activity in li_filtered:
             self.assertEqual(activity.date, date)
 
     def test_filter_by_person(self):
-        li_filtered = self.activity_service.filter_by_person(1)
+        li_filtered = self.activity_service.search_by_person(1)
 
         for activity in li_filtered:
             self.assertIn(1, activity.person_id_list)
@@ -189,7 +190,7 @@ class Test(unittest.TestCase):
 
     # Add by entity
     def test_add_activity_entity(self):
-        a = Activity([1,2,3], "1/1/1", "1:1-1:2", "a")
+        a = Activity([1, 2, 3], "1/1/1", "1:1-1:2", "a")
         self.activity_service.add_activity_entity(a)
 
     # Entities
@@ -211,3 +212,44 @@ class Test(unittest.TestCase):
         p1_string = str(p1)
 
         self.assertEqual(p1.phone_number, "3424212")
+
+    # Data structure
+
+    def test_sort_by_id(self):
+        p = Person("Zaris", "1")
+        p.id = 0
+        self.person_service.add_person_entity(p)
+
+        self.person_service.sort_ascending_by_id()
+        self.activity_service.sort_ascending_by_id()
+
+        li_persons = self.person_service.get_all_persons()
+        li_activities = self.activity_service.get_all_activities()
+
+        for x in range(len(li_persons) - 1):
+            self.assertLess(li_persons[x].id, li_persons[x + 1].id)
+
+        for x in range(len(li_activities) - 1):
+            self.assertLess(li_activities[x].id, li_activities[x + 1].id)
+
+        self.person_service.delete_person(0)
+
+    def test_filter(self):
+        ds = MyDataStructure()
+        ds_service = DataStructureService(ds)
+
+        p1 = Person("zaris", "4324")
+        p2 = Person("zaris", "")
+        p3 = Person("zaris", "")
+
+        ds.__add__(p1)
+        ds.__add__(p2)
+        ds.__add__(p3)
+
+        ds_service.filter(ds_service.id_greater_than, [12])
+
+        for person in ds:
+            print(person.id)
+
+        for person in ds:
+            self.assertGreater(person.id, 12)

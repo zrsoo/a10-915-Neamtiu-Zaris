@@ -7,7 +7,7 @@
 
 
 def add_person_handler(person_service, person_id):
-    person = person_service.filter_by_id(person_id)
+    person = person_service.display_by_id(person_id)
     person_service.delete_person(person_id)
     return person
 
@@ -40,7 +40,7 @@ def update_person_handler(person_service, person):
 
 
 def add_activity_handler(activity_service, activity_id):
-    activity = activity_service.filter_by_id(activity_id)
+    activity = activity_service.display_by_id(activity_id)
     activity_service.delete_activity(activity_id)
     return activity
 

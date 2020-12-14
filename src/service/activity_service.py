@@ -168,17 +168,17 @@ class ActivityService:
             except ActivityValidatorException as ex:
                 print("Error, " + str(ex))
 
-    def filter_by_date_time(self, date, time):
+    def search_by_date_time(self, date, time):
         # return [activity for activity in self.get_all_activities() if activity.date == date and time in activity.time]
         # print(self.time_in_interval(date, time))
         return [activity for activity in self.get_all_activities() if activity.date == date
                 and self.time_in_interval(time, activity.time)]
 
-    def filter_by_description(self, description):
+    def search_by_description(self, description):
         return [activity for activity in self.get_all_activities()
                 if activity.description.lower() == description.lower()]
 
-    def filter_by_date(self, date):
+    def search_by_date(self, date):
         li_activities = [activity for activity in self.get_all_activities() if activity.date == date]
         li_activities.sort(key=self.my_key)
         return li_activities
@@ -189,7 +189,7 @@ class ActivityService:
         li_words = [int(word) for word in string_time[0].split(':')]
         return li_words
 
-    def filter_by_person(self, person_id):
+    def search_by_person(self, person_id):
         li_activities = [activity for activity in self.get_all_activities() if
                          int(person_id) in activity.person_id_list]
         return li_activities
@@ -289,3 +289,9 @@ class ActivityService:
 
     def filter_by_id(self, activity_id):
         return self.__activity_repository.find_by_id(activity_id)
+
+    def sort_ascending_by_id(self):
+        self.__activity_repository.sort()
+
+    def filter_greater_id(self, args):
+        self.__activity_repository.filter_greater_id(args)
